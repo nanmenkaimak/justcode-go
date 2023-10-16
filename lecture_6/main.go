@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	. "github.com/dave/jennifer/jen"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -60,30 +61,44 @@ func main() {
 
 func generateStructFromJSON(jsonInput string) {
 	var data map[string]interface{}
+
 	if err := json.Unmarshal([]byte(jsonInput), &data); err != nil {
 		fmt.Println(err)
 		return
 	}
-	str += "type T struct { \n"
-	generate(data, 1)
-	str += "}"
-	fmt.Println(str)
+
+	f := NewFile("test")
+	f.Type()
+	f.Add(generate(data, "T"))
+
+	fmt.Printf("%#v", f)
 }
 
-func generate(data map[string]interface{}, lvl int) {
-	for key, value := range data {
-		tab := ""
-		for i := 0; i < lvl; i++ {
-			tab += "\t"
+func generate(data map[string]interface{}, name string) *Statement {
+	res := Id(name).StructFunc(func(group *Group) {
+		for key, value := range data {
+			var field *Statement
+			switch value.(type) {
+			case string:
+				field = String()
+			case bool:
+				field = Bool()
+			case float64:
+				field = Float64()
+			case int:
+				field = Int()
+			case interface{}:
+				field = Index().Interface()
+			default:
+				field = Interface()
+			}
+			structName := cases.Title(language.English, cases.NoLower).String(key)
+			if struc, ok := value.(map[string]interface{}); ok {
+				group.Add(generate(struc, structName))
+			} else {
+				group.Id(structName).Add(field).Tag(map[string]string{"json": key})
+			}
 		}
-
-		switch value.(type) {
-		case map[string]interface{}:
-			str += fmt.Sprintf("%s%s struct {\n", tab, cases.Title(language.English, cases.NoLower).String(key))
-			generate(value.(map[string]interface{}), lvl+1)
-			str += fmt.Sprintf("%s}\n", tab)
-		default:
-			str += fmt.Sprintf("%s%s %T `json:\"%s\"`\n", tab, cases.Title(language.English, cases.NoLower).String(key), value, key)
-		}
-	}
+	})
+	return res
 }
