@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 	"github.com/nanmenkaimak/justcode-go/lecture_9/internal/dbs/postgres"
+	"github.com/nanmenkaimak/justcode-go/lecture_9/internal/dbs/redis"
 	"github.com/nanmenkaimak/justcode-go/lecture_9/internal/handlers"
 	"log"
 )
@@ -21,7 +22,12 @@ func main() {
 	}
 	defer sqlDB.Close()
 
-	repo := handlers.NewRepo(db)
+	dbRedis, err := redis.New()
+	if err != nil {
+		log.Fatal()
+	}
+
+	repo := handlers.NewRepo(db, dbRedis)
 	handlers.NewHandlers(repo)
 
 	r := gin.Default()
