@@ -10,7 +10,7 @@ import (
 var Repo *Repository
 
 type Repository struct {
-	DB      repository.DatabaseRepo
+	DB      repository.Repository
 	DBRedis *redis.Client
 }
 

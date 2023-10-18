@@ -5,7 +5,7 @@ import (
 	"github.com/nanmenkaimak/justcode-go/lecture_9/internal/models"
 )
 
-type DatabaseRepo interface {
+type Repository interface {
 	CreateGist(newGist models.GistRequest) (uuid.UUID, error)
 	GetAllGists() ([]models.GistRequest, error)
 	GetGistByID(id uuid.UUID) (models.GistRequest, error)

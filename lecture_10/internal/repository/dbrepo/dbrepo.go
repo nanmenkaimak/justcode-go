@@ -5,12 +5,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type postgresDBRepo struct {
+type gistRepository struct {
 	DB *gorm.DB
 }
 
-func NewPostgresRepo(conn *gorm.DB) repository.DatabaseRepo {
-	return &postgresDBRepo{
+func NewPostgresRepo(conn *gorm.DB) repository.Repository {
+	return &gistRepository{
 		DB: conn,
 	}
 }

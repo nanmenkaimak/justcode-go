@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (m *postgresDBRepo) CreateGist(newGist models.GistRequest) (uuid.UUID, error) {
+func (m *gistRepository) CreateGist(newGist models.GistRequest) (uuid.UUID, error) {
 	err := m.DB.Transaction(func(tx *gorm.DB) error {
 		res := tx.Create(&newGist.Gist)
 		if res.Error != nil {
@@ -39,7 +39,7 @@ func (m *postgresDBRepo) CreateGist(newGist models.GistRequest) (uuid.UUID, erro
 	return newGist.Gist.ID, nil
 }
 
-func (m *postgresDBRepo) GetAllGists() ([]models.GistRequest, error) {
+func (m *gistRepository) GetAllGists() ([]models.GistRequest, error) {
 	var allGistsReq []models.GistRequest
 
 	var allGists []models.Gist
@@ -72,7 +72,7 @@ func (m *postgresDBRepo) GetAllGists() ([]models.GistRequest, error) {
 	return allGistsReq, nil
 }
 
-func (m *postgresDBRepo) GetGistByID(id uuid.UUID) (models.GistRequest, error) {
+func (m *gistRepository) GetGistByID(id uuid.UUID) (models.GistRequest, error) {
 	var gistReq models.GistRequest
 
 	var gist models.Gist
@@ -102,7 +102,7 @@ func (m *postgresDBRepo) GetGistByID(id uuid.UUID) (models.GistRequest, error) {
 	return gistReq, nil
 }
 
-func (m *postgresDBRepo) UpdateGist(updatedGist models.GistRequest) error {
+func (m *gistRepository) UpdateGist(updatedGist models.GistRequest) error {
 	err := m.DB.Transaction(func(tx *gorm.DB) error {
 		updatedGist.Gist.UpdatedAt = time.Now()
 		res := tx.Model(&updatedGist.Gist).Where("id = ?", updatedGist.Gist.ID).Updates(updatedGist.Gist)
@@ -131,7 +131,7 @@ func (m *postgresDBRepo) UpdateGist(updatedGist models.GistRequest) error {
 	return err
 }
 
-func (m *postgresDBRepo) DeleteGistByID(id uuid.UUID) error {
+func (m *gistRepository) DeleteGistByID(id uuid.UUID) error {
 	err := m.DB.Where("id = ?", id).Delete(&models.Gist{}).Error
 	return err
 }
