@@ -13,7 +13,7 @@ type GistRequest struct {
 
 type Gist struct {
 	ID          uuid.UUID `json:"id" gorm:"primaryKey; type:uuid; default:gen_random_uuid()"`
-	Name        string    `json:"name" gorm:"type:varchar(50) unique"`
+	Name        string    `json:"name" gorm:"type:varchar(50); unique"`
 	Description string    `json:"description" gorm:"type:varchar(150)"`
 	CreatedAt   time.Time `json:"created_at" gorm:"default:now()"`
 	UpdatedAt   time.Time `json:"updated_at" gorm:"default:now()"`
