@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package userservice;
+
+option go_package = "./;pb";
+
+service UserService {
+  rpc GetAllFollowers(GetAllFollowersRequest) returns (stream GetAllFollowersResponse) {}
+}
+
+message GetAllFollowersRequest {
+  string user_id = 1;
+}
+
+message GetAllFollowersResponse {
+  User user = 1;
+}
+
+message User {
+  string id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string username = 4;
+  string email = 5;
+  string password = 6;
+  bool is_confirmed = 7;
+}
