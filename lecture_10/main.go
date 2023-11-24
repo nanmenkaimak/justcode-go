@@ -2,11 +2,14 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	_ "github.com/lib/pq"
 	"github.com/nanmenkaimak/justcode-go/lecture_9/internal/dbs/postgres"
 	"github.com/nanmenkaimak/justcode-go/lecture_9/internal/dbs/redis"
 	"github.com/nanmenkaimak/justcode-go/lecture_9/internal/handlers"
 	"log"
+	"net/http"
 )
 
 const portNumber = ":8080"
@@ -37,5 +40,13 @@ func main() {
 	r.PUT("/:id", handlers.Repo.UpdateGistByID)
 	r.DELETE("/:id", handlers.Repo.DeleteGistByID)
 
-	r.Run(portNumber)
+	go func() {
+		r.Run(portNumber)
+	}()
+	chiRouter := chi.NewRouter()
+	chiRouter.Mount("/debug", middleware.Profiler())
+	go func() {
+		http.ListenAndServe(":8081", chiRouter)
+	}()
+	select {}
 }
